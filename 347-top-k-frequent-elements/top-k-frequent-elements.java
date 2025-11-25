@@ -2,32 +2,22 @@ class Solution {
     public int[] topKFrequent(int[] nums, int k) {
         HashMap<Integer,Integer> map=new HashMap<>();
         
-        for (int i=0;i<nums.length;i++){
-            
-            if(map.containsKey(nums[i])){
-                int index =map.get(nums[i])+1;
-                map.replace(nums[i],index);
-            }else{
-                map.put(nums[i],1);
-            }
+        for (int num:nums){
+                map.put(num,map.getOrDefault(num,0)+1);
         }
         int[] res=new int[k];
-        Map<Integer, Integer> sortedMap =
-        map.entrySet()
-           .stream()
-           .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-           .collect(Collectors.toMap(
-                   Map.Entry::getKey,
-                   Map.Entry::getValue,
-                   (e1, e2) -> e1,
-                   LinkedHashMap::new
-           ));
-            int count=0;
-        for(Integer key:sortedMap.keySet()){
-           if (count == k) break;
-            res[count]=key;
-            count++;
-        }return res;
+        PriorityQueue<int[]> heap =new PriorityQueue<>((a,b)->a[0]-b[0]);
+        int count=0;
+        for(Map.Entry<Integer,Integer>  entry:map.entrySet()){
+            heap.offer(new int[]{entry.getValue(),entry.getKey()});
+           if (heap.size() > k) {
+            heap.poll();
+           }
+        }
+        for(int i=0;i<k;i++){
+            res[i]=heap.poll()[1];
+        }
+        return res;
 
 
     }
